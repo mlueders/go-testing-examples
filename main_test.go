@@ -200,4 +200,26 @@ func TestEqual(t *testing.T) {
 		}
 	})
 
+	t.Run("should compare map", func(t *testing.T) {
+		firstMap := map[string]int{"foo":10,"bar":20}
+		secondMap := map[string]int{"foo":10,"bar":20}
+		if shouldFail {
+			secondMap["foo"] = 15
+		}
+		if reflect.DeepEqual(firstMap, secondMap) == false {
+			t.Errorf("Map == %v, want %v", firstMap, secondMap)
+		}
+	})
+
+	t.Run("should compare list", func(t *testing.T) {
+		firstList := []string{"foo", "bar"}
+		secondList := []string{"foo", "bar"}
+		if shouldFail {
+			secondList[1] = "baz"
+		}
+		if reflect.DeepEqual(firstList, secondList) == false {
+			t.Errorf("List == %v, want %v", firstList, secondList)
+		}
+	})
+
 }
