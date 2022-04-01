@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"testing"
 	"time"
@@ -101,7 +102,7 @@ func compareEmbeddedRequestToResponse(t *testing.T, createRequest CreateEmbedded
 }
 
 func TestEqual(t *testing.T) {
-	shouldFail := false
+	shouldFail := os.Getenv("SHOULD_FAIL") == "true"
 	createModelRequest := CreateModelRequest{
 		TheString: "some string",
 		TheInt:    123,
