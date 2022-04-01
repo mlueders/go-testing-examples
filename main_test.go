@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -200,25 +201,59 @@ func TestEqual(t *testing.T) {
 		}
 	})
 
-	t.Run("should compare map", func(t *testing.T) {
+	t.Run("should compare small map", func(t *testing.T) {
 		firstMap := map[string]int{"foo":10,"bar":20}
 		secondMap := map[string]int{"foo":10,"bar":20}
 		if shouldFail {
 			secondMap["foo"] = 15
 		}
 		if reflect.DeepEqual(firstMap, secondMap) == false {
-			t.Errorf("Map == %v, want %v", firstMap, secondMap)
+			t.Errorf("Small Map == %v, want %v", firstMap, secondMap)
 		}
 	})
 
-	t.Run("should compare list", func(t *testing.T) {
+	t.Run("should compare large map", func(t *testing.T) {
+		firstMap := map[string]int{}
+		secondMap := map[string]int{}
+		for i := 1; i <= 100; i++ {
+			firstMap[fmt.Sprintf("%s.%d", "item", i)] = i
+			secondMap[fmt.Sprintf("%s.%d", "item", i)] = i
+		}
+		if shouldFail {
+			secondMap["item.1"] = -1
+			secondMap["item.50"] = -1
+			secondMap["item.99"] = -1
+		}
+		if reflect.DeepEqual(firstMap, secondMap) == false {
+			t.Errorf("Large Map == %v, want %v", firstMap, secondMap)
+		}
+	})
+
+	t.Run("should compare small list", func(t *testing.T) {
 		firstList := []string{"foo", "bar"}
 		secondList := []string{"foo", "bar"}
 		if shouldFail {
 			secondList[1] = "baz"
 		}
 		if reflect.DeepEqual(firstList, secondList) == false {
-			t.Errorf("List == %v, want %v", firstList, secondList)
+			t.Errorf("Small List == %v, want %v", firstList, secondList)
+		}
+	})
+
+	t.Run("should compare large list", func(t *testing.T) {
+		var firstList []string
+		var secondList []string
+		for i := 1; i <= 100; i++ {
+			firstList = append(firstList, fmt.Sprintf("%s.%d", "item", i))
+			secondList = append(secondList, fmt.Sprintf("%s.%d", "item", i))
+		}
+		if shouldFail {
+			secondList[0] = "item.-1"
+			secondList[50] = "item.-1"
+			secondList[99] = "item.-1"
+		}
+		if reflect.DeepEqual(firstList, secondList) == false {
+			t.Errorf("Large List == %v, want %v", firstList, secondList)
 		}
 	})
 
