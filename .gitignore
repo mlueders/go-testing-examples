@@ -1,0 +1,9 @@
+# IntelliJ IDEA files
+.idea/
+*.iml
+*.ipr
+*.iws
+.shelf/
+
+# OS files
+.DS_Store
