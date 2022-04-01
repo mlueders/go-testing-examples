@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"gotest.tools/assert"
+	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
 	"time"
@@ -81,14 +81,14 @@ func compareRequestToResponse(t *testing.T, createRequest CreateModelRequest, re
 	// TODO: investigate better mechanism
 	assert.Equal(t, createRequest.TheString, response.TheString)
 	assert.Equal(t, createRequest.TheInt, response.TheInt)
-	assert.DeepEqual(t, createRequest.ComplexType, response.ComplexType)
+	assert.Equal(t, createRequest.ComplexType, response.ComplexType)
 }
 
 func compareEmbeddedRequestToResponse(t *testing.T, createRequest CreateEmbeddedRequest, response EmbeddedResponse) {
 	// TODO: investigate better mechanism
 	assert.Equal(t, createRequest.TheString, response.TheString)
 	assert.Equal(t, createRequest.TheInt, response.TheInt)
-	assert.DeepEqual(t, createRequest.ComplexType, response.ComplexType)
+	assert.Equal(t, createRequest.ComplexType, response.ComplexType)
 }
 
 func TestEqual(t *testing.T) {
@@ -127,7 +127,7 @@ func TestEqual(t *testing.T) {
 		if shouldFail {
 			createModelRequest2.TheInt = createModelRequest.TheInt + 5
 		}
-		assert.DeepEqual(t, createModelRequest, createModelRequest2)
+		assert.Equal(t, createModelRequest, createModelRequest2)
 	})
 
 	t.Run("should compare inner struct", func(t *testing.T) {
@@ -135,7 +135,7 @@ func TestEqual(t *testing.T) {
 		if shouldFail {
 			createModelRequest2.ComplexType.SubString = createModelRequest.ComplexType.SubString + " - not"
 		}
-		assert.DeepEqual(t, createModelRequest, createModelRequest2)
+		assert.Equal(t, createModelRequest, createModelRequest2)
 	})
 
 	t.Run("should compare almost equivalent struct", func(t *testing.T) {
@@ -169,7 +169,7 @@ func TestEqual(t *testing.T) {
 		if shouldFail {
 			modelWithTime2.TheTime = time.Now()
 		}
-		assert.DeepEqual(t, modelWithTime, modelWithTime2)
+		assert.Equal(t, modelWithTime, modelWithTime2)
 	})
 
 	t.Run("should compare struct with duration", func(t *testing.T) {
@@ -177,7 +177,7 @@ func TestEqual(t *testing.T) {
 		if shouldFail {
 			modelWithTime2.TheDuration = 50 * time.Second
 		}
-		assert.DeepEqual(t, modelWithTime, modelWithTime2)
+		assert.Equal(t, modelWithTime, modelWithTime2)
 	})
 
 	t.Run("should compare small map", func(t *testing.T) {
@@ -186,7 +186,7 @@ func TestEqual(t *testing.T) {
 		if shouldFail {
 			secondMap["foo"] = 15
 		}
-		assert.DeepEqual(t, firstMap, secondMap)
+		assert.Equal(t, firstMap, secondMap)
 	})
 
 	t.Run("should compare large map", func(t *testing.T) {
@@ -201,7 +201,7 @@ func TestEqual(t *testing.T) {
 			secondMap["item.50"] = -1
 			secondMap["item.99"] = -1
 		}
-		assert.DeepEqual(t, firstMap, secondMap)
+		assert.Equal(t, firstMap, secondMap)
 	})
 
 	t.Run("should compare small list", func(t *testing.T) {
@@ -210,7 +210,7 @@ func TestEqual(t *testing.T) {
 		if shouldFail {
 			secondList[1] = "baz"
 		}
-		assert.DeepEqual(t, firstList, secondList)
+		assert.Equal(t, firstList, secondList)
 	})
 
 	t.Run("should compare large list", func(t *testing.T) {
@@ -225,7 +225,7 @@ func TestEqual(t *testing.T) {
 			secondList[50] = "item.-1"
 			secondList[99] = "item.-1"
 		}
-		assert.DeepEqual(t, firstList, secondList)
+		assert.Equal(t, firstList, secondList)
 	})
 
 }
