@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
+	"github.com/go-test/deep"
 	"os"
-	"reflect"
 	"testing"
 	"time"
 )
@@ -78,26 +78,20 @@ func cloneModelWithTime(modelWithTime ModelWithTime) ModelWithTime {
 }
 
 func compareRequestToResponse(t *testing.T, createRequest CreateModelRequest, response ModelResponse) {
-	if createRequest.TheString != response.TheString {
-		t.Errorf("TheString == %q, want %q", response.TheString, createRequest.TheString)
-	}
-	if createRequest.TheInt != response.TheInt {
-		t.Errorf("TheInt == %q, want %q", response.TheInt, createRequest.TheInt)
-	}
-	if reflect.DeepEqual(createRequest.ComplexType, response.ComplexType) == false {
-		t.Errorf("ComplexType == %v, want %v", createRequest.ComplexType, response.ComplexType)
-	}
+	assertEqual(t, createRequest.TheString, response.TheString)
+	assertEqual(t, createRequest.TheInt, response.TheInt)
+	assertEqual(t, createRequest.ComplexType, response.ComplexType)
 }
 
 func compareEmbeddedRequestToResponse(t *testing.T, createRequest CreateEmbeddedRequest, response EmbeddedResponse) {
-	if createRequest.TheString != response.TheString {
-		t.Errorf("TheString == %q, want %q", response.TheString, createRequest.TheString)
-	}
-	if createRequest.TheInt != response.TheInt {
-		t.Errorf("TheInt == %q, want %q", response.TheInt, createRequest.TheInt)
-	}
-	if reflect.DeepEqual(createRequest.ComplexType, response.ComplexType) == false {
-		t.Errorf("ComplexType == %v, want %v", createRequest.ComplexType, response.ComplexType)
+	assertEqual(t, createRequest.TheString, response.TheString)
+	assertEqual(t, createRequest.TheInt, response.TheInt)
+	assertEqual(t, createRequest.ComplexType, response.ComplexType)
+}
+
+func assertEqual(t *testing.T, a, b interface{}) {
+	if diff := deep.Equal(a, b); diff != nil {
+		t.Error(diff)
 	}
 }
 
@@ -129,9 +123,7 @@ func TestEqual(t *testing.T) {
 		if shouldFail {
 			createModelRequest2.TheString = createModelRequest.TheString + " - not"
 		}
-		if createModelRequest.TheString != createModelRequest2.TheString {
-			t.Errorf("TheString == %q, want %q", createModelRequest2.TheString, createModelRequest.TheString)
-		}
+		assertEqual(t, createModelRequest.TheString, createModelRequest2.TheString)
 	})
 
 	t.Run("should compare struct", func(t *testing.T) {
@@ -139,9 +131,7 @@ func TestEqual(t *testing.T) {
 		if shouldFail {
 			createModelRequest2.TheInt = createModelRequest.TheInt + 5
 		}
-		if reflect.DeepEqual(createModelRequest, createModelRequest2) == false {
-			t.Errorf("CreateModelRequest == %v, want %v", createModelRequest2, createModelRequest)
-		}
+		assertEqual(t, createModelRequest, createModelRequest2)
 	})
 
 	t.Run("should compare inner struct", func(t *testing.T) {
@@ -149,9 +139,7 @@ func TestEqual(t *testing.T) {
 		if shouldFail {
 			createModelRequest2.ComplexType.SubString = createModelRequest.ComplexType.SubString + " - not"
 		}
-		if reflect.DeepEqual(createModelRequest, createModelRequest2) == false {
-			t.Errorf("CreateModelRequest == %v, want %v", createModelRequest2, createModelRequest)
-		}
+		assertEqual(t, createModelRequest, createModelRequest2)
 	})
 
 	t.Run("should compare almost equivalent struct", func(t *testing.T) {
@@ -168,9 +156,7 @@ func TestEqual(t *testing.T) {
 		if shouldFail {
 			request2.TheString = request.TheString + " - not"
 		}
-		if reflect.DeepEqual(request, request2) == false {
-			t.Errorf("EmbeddedResponse == %v, want %v", request, request2)
-		}
+		assertEqual(t, request, request2)
 	})
 
 	t.Run("should compare almost equivalent embedded model", func(t *testing.T) {
@@ -187,9 +173,7 @@ func TestEqual(t *testing.T) {
 		if shouldFail {
 			modelWithTime2.TheTime = time.Now()
 		}
-		if reflect.DeepEqual(modelWithTime, modelWithTime2) == false {
-			t.Errorf("ModelWithTime == %v, want %v", modelWithTime, modelWithTime2)
-		}
+		assertEqual(t, modelWithTime, modelWithTime2)
 	})
 
 	t.Run("should compare struct with duration", func(t *testing.T) {
@@ -197,9 +181,7 @@ func TestEqual(t *testing.T) {
 		if shouldFail {
 			modelWithTime2.TheDuration = 50 * time.Second
 		}
-		if reflect.DeepEqual(modelWithTime, modelWithTime2) == false {
-			t.Errorf("ModelWithTime == %v, want %v", modelWithTime, modelWithTime2)
-		}
+		assertEqual(t, modelWithTime, modelWithTime2)
 	})
 
 	t.Run("should compare small map", func(t *testing.T) {
@@ -208,9 +190,7 @@ func TestEqual(t *testing.T) {
 		if shouldFail {
 			secondMap["foo"] = 15
 		}
-		if reflect.DeepEqual(firstMap, secondMap) == false {
-			t.Errorf("Small Map == %v, want %v", firstMap, secondMap)
-		}
+		assertEqual(t, firstMap, secondMap)
 	})
 
 	t.Run("should compare large map", func(t *testing.T) {
@@ -225,9 +205,7 @@ func TestEqual(t *testing.T) {
 			secondMap["item.50"] = -1
 			secondMap["item.99"] = -1
 		}
-		if reflect.DeepEqual(firstMap, secondMap) == false {
-			t.Errorf("Large Map == %v, want %v", firstMap, secondMap)
-		}
+		assertEqual(t, firstMap, secondMap)
 	})
 
 	t.Run("should compare small list", func(t *testing.T) {
@@ -236,9 +214,7 @@ func TestEqual(t *testing.T) {
 		if shouldFail {
 			secondList[1] = "baz"
 		}
-		if reflect.DeepEqual(firstList, secondList) == false {
-			t.Errorf("Small List == %v, want %v", firstList, secondList)
-		}
+		assertEqual(t, firstList, secondList)
 	})
 
 	t.Run("should compare large list", func(t *testing.T) {
@@ -253,9 +229,7 @@ func TestEqual(t *testing.T) {
 			secondList[50] = "item.-1"
 			secondList[99] = "item.-1"
 		}
-		if reflect.DeepEqual(firstList, secondList) == false {
-			t.Errorf("Large List == %v, want %v", firstList, secondList)
-		}
+		assertEqual(t, firstList, secondList)
 	})
 
 }
